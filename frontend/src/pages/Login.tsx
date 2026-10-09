@@ -22,25 +22,38 @@ export const Login: React.FC = () => {
     setError('');
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/auth/login`, {
-        username,
-        password
-      });
+      const payload = {
+        username: username.trim(),
+        email: username.trim(),
+        password: password
+      };
 
-      const { token, id, role, email } = response.data;
-      localStorage.setItem('token', token);
-      localStorage.setItem('id', String(id));
-      localStorage.setItem('username', response.data.username);
-      localStorage.setItem('role', role);
-      localStorage.setItem('email', email);
+      const response = await axios.post(`${API_BASE_URL}/api/auth/login`, payload);
+      const data = response.data;
 
-      if (role === 'ROLE_ADMIN') {
+      const authToken = data.token || data.access_token;
+      const userId = data.id !== undefined ? String(data.id) : (data.user_id !== undefined ? String(data.user_id) : '');
+      const userRole = data.role || 'STUDENT';
+      const userEmail = data.email || username;
+      const userName = data.username || data.name || userEmail;
+
+      localStorage.setItem('token', authToken);
+      localStorage.setItem('id', userId);
+      localStorage.setItem('username', userName);
+      localStorage.setItem('role', userRole);
+      localStorage.setItem('email', userEmail);
+
+      if (userRole === 'ROLE_ADMIN' || userRole === 'TPO_ADMIN' || userRole === 'ADMIN') {
         navigate('/admin');
       } else {
         navigate('/dashboard');
       }
     } catch (err: any) {
-      setError(err.response?.data || 'Invalid username or password. Please verify the backend is running!');
+      const errorMsg =
+        err.response?.data?.detail ||
+        (typeof err.response?.data === 'string' ? err.response?.data : null) ||
+        'Invalid credentials. Please verify your username/email and password!';
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -70,7 +83,7 @@ export const Login: React.FC = () => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-[11px] font-semibold uppercase tracking-wider text-gray-400 mb-1.5">Username</label>
+            <label className="block text-[11px] font-semibold uppercase tracking-wider text-gray-400 mb-1.5">Email / Username</label>
             <div className="relative">
               <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400 pointer-events-none">
                 <User size={14} />
@@ -79,7 +92,7 @@ export const Login: React.FC = () => {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Enter your username"
+                placeholder="e.g. rahul@campuslink.edu"
                 className="w-full glass-input rounded-xl pl-10 pr-4 py-2.5 text-xs text-white"
               />
             </div>

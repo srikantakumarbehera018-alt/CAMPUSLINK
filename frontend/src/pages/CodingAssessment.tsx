@@ -404,7 +404,8 @@ export const CodingAssessment: React.FC = () => {
   const fetchLearningPaths = async () => {
     setLoadingPaths(true);
     try {
-      const url = `${API_BASE_URL}/api/student/coding/learning-paths?role=${targetRole === 'All` ? detectedRole : targetRole}`;
+      const roleParam = targetRole === 'All' ? detectedRole : targetRole;
+      const url = `${API_BASE_URL}/api/student/coding/learning-paths?role=${encodeURIComponent(roleParam)}`;
       const res = await axios.get(url, { headers });
       setLearningPaths(res.data);
     } catch (e) {

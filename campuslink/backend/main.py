@@ -41,8 +41,9 @@ origins_raw = settings.ALLOWED_ORIGINS.strip()
 if origins_raw:
     origins = [orig.strip() for orig in origins_raw.split(",") if orig.strip()]
 else:
-    # Default allowed origins for local development
+    # Default allowed origins for local development and production
     origins = [
+        "https://campuslink-gamma-neon.vercel.app",
         "http://localhost:5173",
         "http://localhost:3000",
         "http://localhost:8000",
@@ -52,6 +53,11 @@ else:
         "http://127.0.0.1:8000",
         "http://127.0.0.1:8080",
     ]
+
+# Explicitly guarantee that the production Vercel frontend is always allowed
+production_frontend = "https://campuslink-gamma-neon.vercel.app"
+if production_frontend not in origins:
+    origins.append(production_frontend)
 
 # If wildcard is used, credentials must be False per CORS specification.
 has_wildcard = "*" in origins

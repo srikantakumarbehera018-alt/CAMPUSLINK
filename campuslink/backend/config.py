@@ -28,8 +28,8 @@ class Settings:
         "/tmp/uploads" if IS_VERCEL else os.path.join(os.path.dirname(os.path.dirname(__file__)), "uploads")
     )
 
-    # Allowed CORS Origins (comma-separated URLs, e.g. "https://my-app.vercel.app,http://localhost:5173")
-    ALLOWED_ORIGINS: str = os.getenv("ALLOWED_ORIGINS") or os.getenv("FRONTEND_URL") or ""
+    # Allowed CORS Origins (comma-separated URLs)
+    ALLOWED_ORIGINS: str = os.getenv("ALLOWED_ORIGINS") or os.getenv("FRONTEND_URL") or "https://campuslink-gamma-neon.vercel.app"
 
 settings = Settings()
 
