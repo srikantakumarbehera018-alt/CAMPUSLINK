@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAMPUSLINK – AI-Powered Campus-to-Corporate Placement Platform</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            200: '#c7d2fe',
+                            300: '#a5b4fc',
+                            400: '#818cf8',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            900: '#312e81',
+                        },
+                        secondary: {
+                            50: '#f0fdf4',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                        },
+                        accent: {
+                            500: '#06b6d4',
+                            600: '#0891b2',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Outfit', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
+
+    <!-- TOP DEMO BAR FOR HACKATHON JUDGES -->
+    <header id="demo-bar" class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white text-xs px-4 py-2 border-b border-indigo-900/60 sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center space-x-2">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400 text-slate-950 uppercase tracking-wider animate-pulse">
+                    ⚡ Hackathon Demo Bar
+                </span>
+                <span class="text-slate-300 hidden md:inline">Quick Personas:</span>
+            </div>
+
+            <!-- Quick Persona Logins -->
+            <div class="flex items-center flex-wrap gap-2" id="quick-login-pills">
+                <button onclick="loginAsPersona('rahul@campuslink.edu')" class="px-2.5 py-1 rounded bg-indigo-600/60 hover:bg-indigo-500 border border-indigo-400/40 text-white font-medium transition flex items-center space-x-1 text-xs">
+                    <span>🎓</span>
+                    <span>Student (Rahul)</span>
+                </button>
+                <button onclick="loginAsPersona('recruiter@technova.com')" class="px-2.5 py-1 rounded bg-teal-600/60 hover:bg-teal-500 border border-teal-400/40 text-white font-medium transition flex items-center space-x-1 text-xs">
+                    <span>🏢</span>
+                    <span>Recruiter (TechNova)</span>
+                </button>
+                <button onclick="loginAsPersona('tpo@campuslink.edu')" class="px-2.5 py-1 rounded bg-purple-600/60 hover:bg-purple-500 border border-purple-400/40 text-white font-medium transition flex items-center space-x-1 text-xs">
+                    <span>🏛️</span>
+                    <span>TPO Admin</span>
+                </button>
+            </div>
+
+            <!-- Fast Judge Demo Actions -->
+            <div class="flex items-center space-x-2">
+                <button onclick="resetDemoData()" title="Reset full realistic seed database" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded text-slate-200 text-xs flex items-center space-x-1 transition">
+                    <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+                    <span class="hidden sm:inline">Reset Seed</span>
+                </button>
+                <button onclick="triggerQuickConflictDemo()" title="Detect scheduling conflicts immediately" class="px-2 py-1 bg-amber-600/70 hover:bg-amber-600 border border-amber-400/40 rounded text-white text-xs flex items-center space-x-1 transition">
+                    <i data-lucide="alert-triangle" class="w-3 h-3"></i>
+                    <span class="hidden sm:inline">Detect Conflicts</span>
+                </button>
+                <button onclick="triggerQuickOfferSim()" title="Simulate 8 LPA Offer for student" class="px-2 py-1 bg-emerald-600 hover:bg-emerald-500 border border-emerald-400/40 rounded text-white text-xs flex items-center space-x-1 transition font-medium">
+                    <i data-lucide="sparkles" class="w-3 h-3"></i>
+                    <span>Simulate Offer (8 LPA)</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN NAVBAR -->
+    <nav class="bg-white/95 backdrop-blur-md border-b border-slate-200/80 sticky top-[37px] z-40 transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <!-- Brand Logo & Tagline -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="navigateTo('landing')">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
+                        <i data-lucide="layers" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-1.5">
+                            <span class="font-heading font-extrabold text-2xl tracking-tight text-slate-900">CAMPUS<span class="text-indigo-600">LINK</span></span>
+                            <span class="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">AI Platform</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 tracking-tight hidden sm:block">From Campus Readiness to Corporate Success.</p>
+                    </div>
+                </div>
+
+                <!-- Nav Menu / Active Role Navigation -->
+                <div class="flex items-center space-x-3">
+                    <div id="nav-role-badge" class="hidden sm:flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 mr-2"></span>
+                        <span id="nav-user-label">Guest</span>
+                    </div>
+
+                    <!-- Role Switch Nav Buttons (when logged in) -->
+                    <div id="auth-actions" class="flex items-center space-x-2">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <!-- Notification Bell -->
+                    <div id="notif-wrapper" class="relative hidden">
+                        <button onclick="toggleNotificationDropdown()" class="p-2 text-slate-600 hover:text-indigo-600 hover:bg-slate-100 rounded-lg relative transition">
+                            <i data-lucide="bell" class="w-5 h-5"></i>
+                            <span id="notif-badge" class="hidden absolute top-1 right-1 w-2.5 h-2.5 bg-rose-500 rounded-full ring-2 ring-white"></span>
+                        </button>
+                        <!-- Dropdown -->
+                        <div id="notif-dropdown" class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-xl shadow-xl border border-slate-100 py-2 z-50 animate-in fade-in slide-in-from-top-2">
+                            <div class="px-4 py-2 border-b border-slate-100 flex items-center justify-between">
+                                <span class="font-semibold text-sm text-slate-900">Notifications</span>
+                                <button onclick="markAllNotificationsRead()" class="text-xs text-indigo-600 hover:underline">Mark all read</button>
+                            </div>
+                            <div id="notif-list" class="max-h-72 overflow-y-auto divide-y divide-slate-50 text-xs">
+                                <!-- Notifications items -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Auth button (Login or Logout) -->
+                    <div id="nav-auth-btn-container">
+                        <button onclick="openLoginModal()" class="px-4 py-2 text-sm font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition">
+                            Login
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- TOAST ALERT CONTAINER -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+    <!-- MAIN APP VIEWPORT -->
+    <main id="app-content" class="flex-1 pb-16">
+        <!-- Views rendered here: Landing, Student Dashboard, Recruiter Dashboard, Admin Dashboard -->
+        <div id="loading-spinner" class="py-24 flex flex-col items-center justify-center space-y-4">
+            <div class="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+            <p class="text-sm font-medium text-slate-500">Initializing CAMPUSLINK AI Platform...</p>
+        </div>
+    </main>
+
+    <!-- FLOATING AI CHATBOT WIDGET -->
+    <div id="chatbot-container" class="fixed bottom-6 left-6 z-40">
+        <!-- Floating Chat Button -->
+        <button id="chatbot-toggle-btn" onclick="toggleChatbot()" class="group relative flex items-center space-x-2 px-4 py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-full shadow-lg hover:shadow-indigo-500/30 hover:scale-105 transition-all">
+            <div class="relative">
+                <i data-lucide="bot" class="w-5 h-5"></i>
+                <span class="absolute -top-1 -right-1 w-2 h-2 bg-emerald-400 rounded-full animate-ping"></span>
+            </div>
+            <span class="font-medium text-xs">AI Assistant</span>
+        </button>
+
+        <!-- Chat Window Card -->
+        <div id="chatbot-window" class="hidden absolute bottom-14 left-0 w-84 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden z-50 h-[480px]">
+            <!-- Header -->
+            <div class="px-4 py-3 bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 text-white flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center text-white">
+                        <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-heading font-semibold text-sm">CAMPUSLINK AI Assistant</h4>
+                        <p class="text-[10px] text-indigo-100">Grounded placement guidance</p>
+                    </div>
+                </div>
+                <button onclick="toggleChatbot()" class="text-white/80 hover:text-white p-1 rounded">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- Messages Log -->
+            <div id="chatbot-messages" class="flex-1 p-3 overflow-y-auto space-y-3 bg-slate-50/70 text-xs">
+                <!-- Dynamically loaded -->
+            </div>
+
+            <!-- Quick Suggestions -->
+            <div id="chatbot-suggestions" class="p-2 bg-white border-t border-slate-100 flex flex-wrap gap-1 text-[11px]">
+                <button onclick="sendChatMessage('Am I eligible for TechNova?')" class="px-2 py-0.5 rounded-full bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 transition">TechNova eligibility?</button>
+                <button onclick="sendChatMessage('What skills am I missing for Java Developer?')" class="px-2 py-0.5 rounded-full bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 transition">Missing skills?</button>
+                <button onclick="sendChatMessage('How can I improve my readiness score?')" class="px-2 py-0.5 rounded-full bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 transition">Improve readiness?</button>
+            </div>
+
+            <!-- Input Bar -->
+            <form onsubmit="handleChatSubmit(event)" class="p-2.5 bg-white border-t border-slate-200 flex items-center space-x-2">
+                <input id="chat-input-text" type="text" placeholder="Ask about eligibility, skills, drives..." class="flex-1 px-3 py-1.5 text-xs bg-slate-100 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                <button type="submit" class="p-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition">
+                    <i data-lucide="send" class="w-4 h-4"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- AUTH MODAL -->
+    <div id="login-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 relative animate-in zoom-in-95">
+            <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 rounded-xl bg-indigo-600 text-white mx-auto flex items-center justify-center mb-2">
+                    <i data-lucide="lock" class="w-6 h-6"></i>
+                </div>
+                <h3 class="font-heading font-bold text-xl text-slate-900">Sign in to CAMPUSLINK</h3>
+                <p class="text-xs text-slate-500 mt-1">Select your account or enter your credentials</p>
+            </div>
+
+            <!-- Quick Demo Select Pills in Modal -->
+            <div class="mb-5 p-3 bg-indigo-50/60 rounded-xl border border-indigo-100">
+                <p class="text-[11px] font-semibold text-indigo-900 uppercase tracking-wider mb-2">⚡ Quick 1-Click Persona Logins:</p>
+                <div class="grid grid-cols-1 gap-1.5">
+                    <button type="button" onclick="loginAsPersona('rahul@campuslink.edu')" class="w-full text-left px-3 py-1.5 rounded-lg bg-white hover:bg-indigo-600 hover:text-white border border-slate-200 text-xs font-medium transition flex items-center justify-between">
+                        <span>🎓 Student: <b>Rahul Sharma</b> (CSE, 8.6 CGPA)</span>
+                        <span class="text-[10px] opacity-75">Click to Log In</span>
+                    </button>
+                    <button type="button" onclick="loginAsPersona('recruiter@technova.com')" class="w-full text-left px-3 py-1.5 rounded-lg bg-white hover:bg-teal-600 hover:text-white border border-slate-200 text-xs font-medium transition flex items-center justify-between">
+                        <span>🏢 Recruiter: <b>TechNova Solutions HR</b></span>
+                        <span class="text-[10px] opacity-75">Click to Log In</span>
+                    </button>
+                    <button type="button" onclick="loginAsPersona('tpo@campuslink.edu')" class="w-full text-left px-3 py-1.5 rounded-lg bg-white hover:bg-purple-600 hover:text-white border border-slate-200 text-xs font-medium transition flex items-center justify-between">
+                        <span>🏛️ Admin: <b>Prof. Verma</b> (Placement Cell Head)</span>
+                        <span class="text-[10px] opacity-75">Click to Log In</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Traditional Form -->
+            <form onsubmit="handleManualLogin(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">Email Address</label>
+                    <input id="login-email" type="email" required placeholder="user@campuslink.edu" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">Password</label>
+                    <input id="login-password" type="password" required placeholder="••••••••" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold text-sm transition shadow-sm">
+                    Sign In
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- EXPLAINABLE MATCHING MODAL -->
+    <div id="explain-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-100 relative animate-in zoom-in-95 max-h-[90vh] overflow-y-auto">
+            <button onclick="closeExplainModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div id="explain-modal-body">
+                <!-- Dynamically loaded explanation -->
+            </div>
+        </div>
+    </div>
+
+    <!-- JOB CREATION MODAL (WITH AI JD PARSER) -->
+    <div id="job-create-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-100 relative animate-in zoom-in-95 max-h-[90vh] overflow-y-auto">
+            <button onclick="closeJobCreateModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="mb-4">
+                <div class="inline-flex items-center space-x-1.5 px-2 py-0.5 rounded bg-teal-50 text-teal-700 text-[10px] font-bold uppercase mb-1">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                    <span>Automatic NLP Requirement Extraction</span>
+                </div>
+                <h3 class="font-heading font-bold text-xl text-slate-900">Post New Campus Placement Role</h3>
+                <p class="text-xs text-slate-500">Paste job description text. The AI engine automatically extracts minimum CGPA, eligible branches, and required skill sets.</p>
+            </div>
+
+            <form onsubmit="handleJobCreateSubmit(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-medium text-slate-700 mb-1">Job Title / Designation</label>
+                    <input id="new-job-title" type="text" required placeholder="e.g. Java Backend Developer" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-500">
+                </div>
+
+                <div>
+                    <label class="block font-medium text-slate-700 mb-1">Job Description (Unstructured Text)</label>
+                    <textarea id="new-job-description" rows="4" required placeholder="Paste JD here... e.g. Looking for a Java developer with Java, Spring Boot, SQL, REST API, Git. Minimum 7 CGPA and CSE/IT background." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-500 text-xs" oninput="autoAnalyzeJD(this.value)"></textarea>
+                </div>
+
+                <!-- AI Extraction Live Preview -->
+                <div id="jd-preview-box" class="p-3 bg-teal-50/50 rounded-xl border border-teal-100 space-y-1">
+                    <span class="font-semibold text-teal-900 block text-[11px]">✨ AI Live Extraction:</span>
+                    <p class="text-[11px] text-teal-800" id="jd-extracted-preview">Type in description above to extract requirements automatically...</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Annual CTC (₹ LPA)</label>
+                        <input id="new-job-ctc" type="number" step="0.5" value="8.5" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Minimum CGPA Cutoff</label>
+                        <input id="new-job-cgpa" type="number" step="0.1" value="7.0" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Eligible Branches (comma separated)</label>
+                        <input id="new-job-branches" type="text" value="CSE, IT" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Required Skills (comma separated)</label>
+                        <input id="new-job-skills" type="text" value="Java, Spring Boot, SQL, REST API, Git" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-semibold transition mt-2 shadow-sm">
+                    Publish Role to Placement Arena
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- STUDENT PROFILE EDIT MODAL -->
+    <div id="student-profile-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-100 relative animate-in zoom-in-95 max-h-[90vh] overflow-y-auto">
+            <button onclick="closeStudentProfileModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="mb-4">
+                <div class="inline-flex items-center space-x-1.5 px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 text-[10px] font-bold uppercase mb-1">
+                    <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
+                    <span>Profile & Employability Editor</span>
+                </div>
+                <h3 class="font-heading font-bold text-xl text-slate-900">Edit Student Candidate Profile</h3>
+                <p class="text-xs text-slate-500">Update academic metrics, technical skill sets, and portfolio details. The AI engine recalculates your readiness score automatically.</p>
+            </div>
+
+            <form onsubmit="handleStudentProfileSubmit(event)" class="space-y-3 text-xs">
+                <input id="edit-student-id" type="hidden">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Contact Phone</label>
+                        <input id="edit-student-phone" type="text" placeholder="+91 98765 43210" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Branch</label>
+                        <select id="edit-student-branch" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                            <option value="CSE">CSE</option>
+                            <option value="IT">IT</option>
+                            <option value="ECE">ECE</option>
+                            <option value="EEE">EEE</option>
+                            <option value="ME">ME</option>
+                            <option value="Civil">Civil</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Cumulative CGPA</label>
+                        <input id="edit-student-cgpa" type="number" step="0.01" min="0" max="10" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Active Backlogs</label>
+                        <input id="edit-student-backlogs" type="number" min="0" max="15" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-medium text-slate-700 mb-1">Technical Skills (comma separated)</label>
+                    <input id="edit-student-skills" type="text" placeholder="Java, Spring Boot, SQL, Git, React, Docker" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                </div>
+
+                <div>
+                    <label class="block font-medium text-slate-700 mb-1">Soft Skills (comma separated)</label>
+                    <input id="edit-student-soft-skills" type="text" placeholder="Communication, Team Leadership, Problem Solving" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                </div>
+
+                <div>
+                    <label class="block font-medium text-slate-700 mb-1">Certifications (comma separated)</label>
+                    <input id="edit-student-certs" type="text" placeholder="AWS Cloud Practitioner, Oracle Java Associate" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                </div>
+
+                <div>
+                    <label class="block font-medium text-slate-700 mb-1">Internship Experience</label>
+                    <textarea id="edit-student-internship" rows="2" placeholder="e.g. 3-month Software Intern at FinTech Labs working on REST APIs and PostgreSQL..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs"></textarea>
+                </div>
+
+                <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition mt-2 shadow-sm">
+                    Save Profile & Recalculate AI Readiness
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- SCHEDULE INTERVIEW MODAL -->
+    <div id="schedule-interview-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 relative animate-in zoom-in-95">
+            <button onclick="closeScheduleInterviewModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="mb-4">
+                <div class="inline-flex items-center space-x-1.5 px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 text-[10px] font-bold uppercase mb-1">
+                    <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                    <span>Interview Scheduling</span>
+                </div>
+                <h3 class="font-heading font-bold text-lg text-slate-900">Schedule Candidate Interview</h3>
+                <p class="text-xs text-slate-500" id="schedule-interview-subtext">Set round details, interview panel, and time slot.</p>
+            </div>
+
+            <form onsubmit="handleScheduleInterviewSubmit(event)" class="space-y-3 text-xs">
+                <input id="sched-app-id" type="hidden">
+                <input id="sched-student-id" type="hidden">
+
+                <div>
+                    <label class="block font-medium text-slate-700 mb-1">Interview Round Title</label>
+                    <input id="sched-round-name" type="text" value="Technical Round 1" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                </div>
+
+                <div>
+                    <label class="block font-medium text-slate-700 mb-1">Scheduled Date & Time</label>
+                    <input id="sched-time" type="text" value="2026-10-25 10:30 AM" required placeholder="YYYY-MM-DD HH:MM AM/PM" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                </div>
+
+                <div>
+                    <label class="block font-medium text-slate-700 mb-1">Interview Panel</label>
+                    <input id="sched-panel" type="text" value="Panel A - Technical (Prof. Sharma, Dr. Rao)" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                </div>
+
+                <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition mt-2 shadow-sm">
+                    Confirm & Dispatch Candidate Notification
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- INTERVIEW FEEDBACK & EVALUATION MODAL -->
+    <div id="interview-feedback-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 relative animate-in zoom-in-95">
+            <button onclick="closeInterviewFeedbackModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="mb-4">
+                <div class="inline-flex items-center space-x-1.5 px-2 py-0.5 rounded bg-teal-50 text-teal-700 text-[10px] font-bold uppercase mb-1">
+                    <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+                    <span>Evaluation Console</span>
+                </div>
+                <h3 class="font-heading font-bold text-lg text-slate-900">Record Interview Evaluation</h3>
+                <p class="text-xs text-slate-500" id="feedback-modal-subtext">Record technical/communication score, remarks, and recommendation.</p>
+            </div>
+
+            <form onsubmit="handleInterviewFeedbackSubmit(event)" class="space-y-3 text-xs">
+                <input id="feedback-interview-id" type="hidden">
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Technical Rating (1–10)</label>
+                        <input id="feedback-tech-rating" type="number" step="0.5" min="1" max="10" value="8.0" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Communication (1–10)</label>
+                        <input id="feedback-comm-rating" type="number" step="0.5" min="1" max="10" value="7.5" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-medium text-slate-700 mb-1">Round Status</label>
+                    <select id="feedback-status" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                        <option value="COMPLETED">COMPLETED</option>
+                        <option value="SCHEDULED">SCHEDULED</option>
+                        <option value="CANCELLED">CANCELLED</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-medium text-slate-700 mb-1">Recommendation Decision</label>
+                    <select id="feedback-rec" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg font-semibold">
+                        <option value="PROGRESS">PROGRESS (Advance to next round)</option>
+                        <option value="SELECT">SELECT (Selected for Offer)</option>
+                        <option value="REJECT">REJECT (Not Recommended)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-medium text-slate-700 mb-1">Detailed Panel Feedback</label>
+                    <textarea id="feedback-notes" rows="3" required placeholder="Enter assessment feedback and observations..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs"></textarea>
+                </div>
+
+                <button type="submit" class="w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-semibold transition mt-2 shadow-sm">
+                    Submit Evaluation & Update Pipeline
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- CREATE PLACEMENT DRIVE MODAL -->
+    <div id="create-drive-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-100 relative animate-in zoom-in-95 max-h-[90vh] overflow-y-auto">
+            <button onclick="closeCreateDriveModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="mb-4">
+                <div class="inline-flex items-center space-x-1.5 px-2 py-0.5 rounded bg-purple-50 text-purple-700 text-[10px] font-bold uppercase mb-1">
+                    <i data-lucide="calendar-plus" class="w-3.5 h-3.5"></i>
+                    <span>TPO Drive Scheduler</span>
+                </div>
+                <h3 class="font-heading font-bold text-xl text-slate-900">Schedule Campus Placement Drive</h3>
+                <p class="text-xs text-slate-500">Assign recruitment dates, slots, venue halls, and interview panels. The conflict engine checks for clashes automatically.</p>
+            </div>
+
+            <form onsubmit="handleCreateDriveSubmit(event)" class="space-y-3 text-xs">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Company / Organization</label>
+                        <input id="drive-comp-name" type="text" placeholder="e.g. Apex Technologies" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Role Designation</label>
+                        <input id="drive-role-title" type="text" placeholder="e.g. Cloud Solutions Architect" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Drive Date</label>
+                        <input id="drive-date" type="text" value="2026-10-28" required placeholder="YYYY-MM-DD" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Start Time</label>
+                        <input id="drive-start-time" type="text" value="10:00 AM" required placeholder="HH:MM AM/PM" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">End Time</label>
+                        <input id="drive-end-time" type="text" value="01:00 PM" required placeholder="HH:MM AM/PM" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Venue Hall</label>
+                        <select id="drive-venue" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                            <option value="Auditorium A">Auditorium A (Cap: 300)</option>
+                            <option value="Seminar Hall 1">Seminar Hall 1 (Cap: 150)</option>
+                            <option value="Conference Room B">Conference Room B (Cap: 60)</option>
+                            <option value="Lab 301">Lab 301 (Cap: 80)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Assigned Panel</label>
+                        <select id="drive-panel" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                            <option value="Panel A - Technical">Panel A - Technical (Prof. Sharma, Dr. Rao)</option>
+                            <option value="Panel B - Cloud">Panel B - Cloud (Prof. Kulkarni, Er. Nambiar)</option>
+                            <option value="Panel C - AI">Panel C - AI (Dr. Roy, Prof. Nair)</option>
+                            <option value="Panel D - Hardware">Panel D - Hardware (Dr. Prasad, Prof. Iyer)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-medium text-slate-700 mb-1">Eligibility Criteria</label>
+                    <input id="drive-eligibility" type="text" value="CGPA >= 7.0, Branches: CSE/IT, Zero Active Backlogs" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                </div>
+
+                <button type="submit" class="w-full py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-semibold transition mt-2 shadow-sm">
+                    Publish Drive & Audit for Overlaps
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- CREATE OFFER MODAL -->
+    <div id="create-offer-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 relative animate-in zoom-in-95">
+            <button onclick="closeCreateOfferModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="mb-4">
+                <div class="inline-flex items-center space-x-1.5 px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase mb-1">
+                    <i data-lucide="award" class="w-3.5 h-3.5"></i>
+                    <span>Offer Disbursement</span>
+                </div>
+                <h3 class="font-heading font-bold text-lg text-slate-900">Issue Corporate Placement Offer</h3>
+                <p class="text-xs text-slate-500" id="offer-modal-subtext">Generate formal placement offer letter and notify the candidate.</p>
+            </div>
+
+            <form onsubmit="handleCreateOfferSubmit(event)" class="space-y-3 text-xs">
+                <input id="offer-app-id" type="hidden">
+                <input id="offer-student-id" type="hidden">
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Company Name</label>
+                        <input id="offer-comp-name" type="text" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Role Title</label>
+                        <input id="offer-role-title" type="text" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Annual CTC (₹ LPA)</label>
+                        <input id="offer-ctc" type="number" step="0.5" value="8.5" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Joining Date</label>
+                        <input id="offer-joining-date" type="text" value="2026-12-01" required placeholder="YYYY-MM-DD" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-medium text-slate-700 mb-1">Remarks / Note</label>
+                    <textarea id="offer-remarks" rows="2" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs">Congratulations on your selection through the AI Placement Arena!</textarea>
+                </div>
+
+                <button type="submit" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold transition mt-2 shadow-sm">
+                    Issue Placement Offer
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-slate-200 mt-auto py-6 text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-2">
+                <span class="font-heading font-bold text-slate-800">CAMPUSLINK</span>
+                <span>•</span>
+                <span>AI-Powered Campus-to-Corporate Placement Management & Analytics Platform</span>
+            </div>
+            <div class="flex items-center space-x-4 text-slate-400">
+                <span>FastAPI + SQLite/MySQL + scikit-learn Hybrid AI</span>
+                <span>•</span>
+                <span>v1.0.0</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- App JS -->
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
