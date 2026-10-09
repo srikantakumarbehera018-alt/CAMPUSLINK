@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { 
@@ -40,14 +41,14 @@ export const StudentDashboard: React.FC = () => {
   const fetchDashboardData = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:8080/api/student/dashboard/analytics', {
+      const response = await axios.get(`${API_BASE_URL}/api/student/dashboard/analytics`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setData(response.data);
       setNewCgpa(String(response.data.cgpa));
 
       // Fetch profile for completion rating and local storage sync
-      const profileResponse = await axios.get('http://localhost:8080/api/profile', {
+      const profileResponse = await axios.get(`${API_BASE_URL}/api/profile`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setProfileCompletion(profileResponse.data.completionPercentage || 0);
@@ -70,7 +71,7 @@ export const StudentDashboard: React.FC = () => {
     if (isNaN(parsed) || parsed < 0 || parsed > 10) return;
     try {
       const token = localStorage.getItem('token');
-      await axios.put('http://localhost:8080/api/student/profile', 
+      await axios.put(`${API_BASE_URL}/api/student/profile`, 
         { cgpa: parsed },
         { headers: { Authorization: `Bearer ${token}` } }
       );

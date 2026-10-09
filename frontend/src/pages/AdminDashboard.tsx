@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { 
@@ -55,10 +56,10 @@ export const AdminDashboard: React.FC = () => {
   const fetchAdminData = async () => {
     try {
       const token = localStorage.getItem('token');
-      const metricsRes = await axios.get('http://localhost:8080/api/admin/metrics', {
+      const metricsRes = await axios.get(`${API_BASE_URL}/api/admin/metrics`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      const studentsRes = await axios.get('http://localhost:8080/api/admin/students', {
+      const studentsRes = await axios.get(`${API_BASE_URL}/api/admin/students`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -77,7 +78,7 @@ export const AdminDashboard: React.FC = () => {
     setDetail(null);
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:8080/api/admin/students/${id}/detail`, {
+      const response = await axios.get(`${API_BASE_URL}/api/admin/students/${id}/detail`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setDetail(response.data);

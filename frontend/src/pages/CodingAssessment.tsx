@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { 
@@ -354,7 +355,7 @@ export const CodingAssessment: React.FC = () => {
     setLoading(true);
     try {
       // 1. Detect role from resume endpoint
-      const detectRes = await axios.get('http://localhost:8080/api/student/role-interview/detect-resume', { headers });
+      const detectRes = await axios.get(`${API_BASE_URL}/api/student/role-interview/detect-resume`, { headers });
       if (detectRes.data && detectRes.data.role) {
         setDetectedRole(detectRes.data.role);
         setTargetRole(detectRes.data.role); // Preset the filter
@@ -368,7 +369,7 @@ export const CodingAssessment: React.FC = () => {
 
   const fetchProblems = async () => {
     try {
-      const url = `http://localhost:8080/api/student/coding/problems?role=${targetRole}&difficulty=${filterDifficulty}&company=${filterCompany}`;
+      const url = `${API_BASE_URL}/api/student/coding/problems?role=${targetRole}&difficulty=${filterDifficulty}&company=${filterCompany}`;
       const res = await axios.get(url, { headers });
       setProblems(res.data);
       if (res.data.length > 0) {
@@ -391,7 +392,7 @@ export const CodingAssessment: React.FC = () => {
   const fetchAnalytics = async () => {
     setLoadingAnalytics(true);
     try {
-      const res = await axios.get('http://localhost:8080/api/student/coding/analytics', { headers });
+      const res = await axios.get(`${API_BASE_URL}/api/student/coding/analytics`, { headers });
       setAnalytics(res.data);
     } catch (e) {
       console.log('Failed to fetch analytics: ', e);
@@ -403,7 +404,7 @@ export const CodingAssessment: React.FC = () => {
   const fetchLearningPaths = async () => {
     setLoadingPaths(true);
     try {
-      const url = `http://localhost:8080/api/student/coding/learning-paths?role=${targetRole === 'All' ? detectedRole : targetRole}`;
+      const url = `${API_BASE_URL}/api/student/coding/learning-paths?role=${targetRole === 'All` ? detectedRole : targetRole}`;
       const res = await axios.get(url, { headers });
       setLearningPaths(res.data);
     } catch (e) {
@@ -458,7 +459,7 @@ export const CodingAssessment: React.FC = () => {
         timeTakenSeconds: secondsElapsed
       };
 
-      const res = await axios.post('http://localhost:8080/api/student/coding/submit', payload, { headers });
+      const res = await axios.post(`${API_BASE_URL}/api/student/coding/submit`, payload, { headers });
       const data = res.data;
       setLastSubmission(data);
       

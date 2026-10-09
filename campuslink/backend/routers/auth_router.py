@@ -15,11 +15,14 @@ def register(user_in: schemas.UserCreate, db: Session = Depends(get_db)):
     if existing:
         raise HTTPException(status_code=400, detail="Email is already registered")
 
+    user_role = (user_in.role or "STUDENT").replace("ROLE_", "").upper()
+    user_name = (user_in.name or user_in.username or user_in.email.split("@")[0]).strip()
+
     user = models.User(
         email=user_in.email,
         password_hash=hash_password(user_in.password),
-        role=user_in.role.upper(),
-        name=user_in.name
+        role=user_role,
+        name=user_name
     )
     db.add(user)
     db.commit()
@@ -61,17 +64,21 @@ def register(user_in: schemas.UserCreate, db: Session = Depends(get_db)):
     token = create_access_token({"sub": user.email, "role": user.role, "id": user.id})
     return {
         "access_token": token,
+        "token": token,
         "token_type": "bearer",
         "role": user.role,
         "user_id": user.id,
+        "id": user.id,
         "name": user.name,
+        "username": user.name,
         "email": user.email,
         "profile_id": profile_id
     }
 
 @router.post("/login", response_model=schemas.Token)
 def login(login_data: schemas.UserLogin, db: Session = Depends(get_db)):
-    user = db.query(models.User).filter(models.User.email == login_data.email).first()
+    login_identifier = (login_data.email or login_data.username or "").strip()
+    user = db.query(models.User).filter(models.User.email == login_identifier).first()
     if not user or not verify_password(login_data.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -87,10 +94,13 @@ def login(login_data: schemas.UserLogin, db: Session = Depends(get_db)):
     token = create_access_token({"sub": user.email, "role": user.role, "id": user.id})
     return {
         "access_token": token,
+        "token": token,
         "token_type": "bearer",
         "role": user.role,
         "user_id": user.id,
+        "id": user.id,
         "name": user.name,
+        "username": user.name,
         "email": user.email,
         "profile_id": profile_id
     }

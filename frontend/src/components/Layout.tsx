@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import axios from 'axios';
@@ -128,7 +129,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const fetchNotifications = async () => {
     if (!localStorage.getItem('token')) return;
     try {
-      const res = await axios.get('http://localhost:8080/api/student/notifications', {
+      const res = await axios.get(`${API_BASE_URL}/api/student/notifications`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setNotifications(res.data);
@@ -139,7 +140,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const markRead = async () => {
     try {
-      await axios.post('http://localhost:8080/api/student/notifications/read', {}, {
+      await axios.post(`${API_BASE_URL}/api/student/notifications/read`, {}, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));

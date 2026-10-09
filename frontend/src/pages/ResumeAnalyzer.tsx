@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
@@ -71,7 +72,7 @@ export const ResumeAnalyzer: React.FC = () => {
   const fetchLatestAnalysis = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:8080/api/student/resume/latest', {
+      const response = await axios.get(`${API_BASE_URL}/api/student/resume/latest`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (response.data && response.data.id) {
@@ -96,7 +97,7 @@ export const ResumeAnalyzer: React.FC = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post('http://localhost:8080/api/student/resume/upload-text', 
+      const response = await axios.post(`${API_BASE_URL}/api/student/resume/upload-text`, 
         { text: resumeText, fileName: 'pasted-resume.txt' },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -158,7 +159,7 @@ export const ResumeAnalyzer: React.FC = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post('http://localhost:8080/api/student/resume/upload-file', 
+      const response = await axios.post(`${API_BASE_URL}/api/student/resume/upload-file`, 
         formData,
         { headers: { 
           Authorization: `Bearer ${token}`,

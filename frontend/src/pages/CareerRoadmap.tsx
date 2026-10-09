@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { 
@@ -49,7 +50,7 @@ export const CareerRoadmap: React.FC = () => {
   const fetchLatestRoadmap = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:8080/api/student/pathfinder/latest', {
+      const response = await axios.get(`${API_BASE_URL}/api/student/pathfinder/latest`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -69,7 +70,7 @@ export const CareerRoadmap: React.FC = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post('http://localhost:8080/api/student/pathfinder/generate', {
+      const response = await axios.post(`${API_BASE_URL}/api/student/pathfinder/generate`, {
         currentSkills,
         targetRole
       }, {

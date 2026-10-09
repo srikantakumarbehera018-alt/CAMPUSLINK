@@ -404,3 +404,9 @@ def respond_to_offer(
         "joining_status": offer.joining_status
     }
 
+
+@router.post("/chatbot/ask", response_model=schemas.ChatResponse)
+def student_chatbot_ask(request: schemas.ChatRequest, db: Session = Depends(get_db)):
+    from routers.assistant_router import assistant_chat
+    return assistant_chat(request=request, db=db)
+

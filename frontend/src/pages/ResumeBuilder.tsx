@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { 
@@ -108,7 +109,7 @@ export const ResumeBuilder: React.FC = () => {
   const fetchResumes = async () => {
     setLoadingList(true);
     try {
-      const res = await axios.get('http://localhost:8080/api/student/resume-builder/list', { headers });
+      const res = await axios.get(`${API_BASE_URL}/api/student/resume-builder/list`, { headers });
       setResumes(res.data);
     } catch (e) {
       console.log("Error loading resumes list:", e);
@@ -139,7 +140,7 @@ export const ResumeBuilder: React.FC = () => {
   const handleEditResume = async (id: number) => {
     setLoadingList(true);
     try {
-      const res = await axios.get(`http://localhost:8080/api/student/resume-builder/${id}`, { headers });
+      const res = await axios.get(`${API_BASE_URL}/api/student/resume-builder/${id}`, { headers });
       const r = res.data;
       setActiveResumeId(r.id);
       setIsEditing(true);
@@ -169,7 +170,7 @@ export const ResumeBuilder: React.FC = () => {
 
   const handleDuplicate = async (id: number) => {
     try {
-      await axios.post(`http://localhost:8080/api/student/resume-builder/duplicate/${id}`, {}, { headers });
+      await axios.post(`${API_BASE_URL}/api/student/resume-builder/duplicate/${id}`, {}, { headers });
       setSuccessToast("👯 Resume template duplicated successfully!");
       fetchResumes();
     } catch (e) {
@@ -180,7 +181,7 @@ export const ResumeBuilder: React.FC = () => {
   const handleDelete = async (id: number) => {
     if (!window.confirm("Are you absolutely sure you want to delete this resume?")) return;
     try {
-      await axios.delete(`http://localhost:8080/api/student/resume-builder/delete/${id}`, { headers });
+      await axios.delete(`${API_BASE_URL}/api/student/resume-builder/delete/${id}`, { headers });
       setSuccessToast("🗑️ Resume deleted successfully.");
       fetchResumes();
     } catch (e) {
@@ -204,7 +205,7 @@ export const ResumeBuilder: React.FC = () => {
     };
 
     try {
-      const res = await axios.post('http://localhost:8080/api/student/resume-builder/save', body, { headers });
+      const res = await axios.post(`${API_BASE_URL}/api/student/resume-builder/save`, body, { headers });
       setActiveResumeId(res.data.id);
       setAtsScore(res.data.atsScore);
       setSuccessToast("💾 Telemetry progress auto-saved successfully!");
@@ -221,7 +222,7 @@ export const ResumeBuilder: React.FC = () => {
   const triggerAIGeneration = async (section: string) => {
     setAiGenerating(true);
     try {
-      const res = await axios.post('http://localhost:8080/api/student/resume-builder/ai-generate', {
+      const res = await axios.post(`${API_BASE_URL}/api/student/resume-builder/ai-generate`, {
         prompt: personalInfo.jobTitle || 'Full Stack Software Engineer',
         sectionType: section
       }, { headers });
@@ -249,7 +250,7 @@ export const ResumeBuilder: React.FC = () => {
   const triggerATSCompatibilityScore = async () => {
     setScoring(true);
     try {
-      const res = await axios.post('http://localhost:8080/api/student/resume-builder/calculate-score', {
+      const res = await axios.post(`${API_BASE_URL}/api/student/resume-builder/calculate-score`, {
         skills,
         experience: JSON.stringify(experience),
         projects: JSON.stringify(projects)

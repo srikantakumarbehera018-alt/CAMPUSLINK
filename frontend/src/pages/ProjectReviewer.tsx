@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { 
@@ -64,7 +65,7 @@ export const ProjectReviewer: React.FC = () => {
 
   const fetchHistory = async () => {
     try {
-      const res = await axios.get('http://localhost:8080/api/student/project/history', { headers });
+      const res = await axios.get(`${API_BASE_URL}/api/student/project/history`, { headers });
       setHistory(res.data);
       if (res.data.length > 0 && !activeReview) {
         setActiveReview(res.data[0]);
@@ -116,7 +117,7 @@ export const ProjectReviewer: React.FC = () => {
         fileName: fileName || 'documentation.pdf'
       };
 
-      const res = await axios.post('http://localhost:8080/api/student/project/submit', payload, { headers });
+      const res = await axios.post(`${API_BASE_URL}/api/student/project/submit`, payload, { headers });
       setActiveReview(res.data);
       setTitle('');
       setDescription('');

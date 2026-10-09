@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { MessageSquare, X, Send, Bot, Sparkles, Trash2, ChevronRight, BookOpen, Terminal, Sparkle, Briefcase, HelpCircle } from 'lucide-react';
+import { API_BASE_URL } from '../config/api';
 
 interface ChatMessage {
   sender: 'user' | 'bot';
@@ -56,7 +57,7 @@ export const Chatbot: React.FC = () => {
 
     try {
       const response = await axios.post(
-        "https://ai-placement-preparation-system-2.onrender.com/api/student/chatbot/ask",
+        `${API_BASE_URL}/api/student/chatbot/ask`,
         { prompt: textToSend },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );

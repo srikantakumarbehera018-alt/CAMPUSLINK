@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { 
@@ -114,7 +115,7 @@ export const PlacementPlanner: React.FC = () => {
   const fetchLatestPlan = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:8080/api/student/planner/latest', { headers });
+      const res = await axios.get(`${API_BASE_URL}/api/student/planner/latest`, { headers });
       if (res.data && res.data.hasPlan) {
         setHasPlan(true);
         const activePlan: PlacementPlan = res.data.plan;
@@ -160,7 +161,7 @@ export const PlacementPlanner: React.FC = () => {
 
     setSubmitting(true);
     try {
-      const res = await axios.post('http://localhost:8080/api/student/planner/generate', formData, { headers });
+      const res = await axios.post(`${API_BASE_URL}/api/student/planner/generate`, formData, { headers });
       const activePlan: PlacementPlan = res.data;
       setPlan(activePlan);
       parsePlanData(activePlan);
@@ -184,7 +185,7 @@ export const PlacementPlanner: React.FC = () => {
         ninetyDayRoadmapJson: JSON.stringify(updatedRoadmap),
         milestonesJson: JSON.stringify(updatedMilestones)
       };
-      const res = await axios.put('http://localhost:8080/api/student/planner/update-progress', payload, { headers });
+      const res = await axios.put(`${API_BASE_URL}/api/student/planner/update-progress`, payload, { headers });
       const activePlan: PlacementPlan = res.data;
       setPlan(activePlan);
       parsePlanData(activePlan);

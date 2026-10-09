@@ -4,12 +4,15 @@ from datetime import datetime
 
 class Token(BaseModel):
     access_token: str
-    token_type: str
+    token_type: str = "bearer"
     role: str
     user_id: int
     name: str
     email: str
     profile_id: Optional[int] = None
+    token: Optional[str] = None
+    id: Optional[int] = None
+    username: Optional[str] = None
 
 class TokenData(BaseModel):
     email: Optional[str] = None
@@ -20,14 +23,20 @@ class UserBase(BaseModel):
     name: str
     role: str
 
-class UserCreate(UserBase):
+class UserCreate(BaseModel):
+    email: str
     password: str
+    name: Optional[str] = None
+    username: Optional[str] = None
+    role: Optional[str] = "STUDENT"
     branch: Optional[str] = "CSE"
     cgpa: Optional[float] = 7.0
     company_name: Optional[str] = None
+    graduationYear: Optional[int] = None
 
 class UserLogin(BaseModel):
-    email: str
+    email: Optional[str] = None
+    username: Optional[str] = None
     password: str
 
 class UserOut(UserBase):
@@ -243,7 +252,8 @@ class DocumentOut(BaseModel):
         from_attributes = True
 
 class ChatRequest(BaseModel):
-    message: str
+    message: Optional[str] = None
+    prompt: Optional[str] = None
     student_id: Optional[int] = None
 
 class ChatResponse(BaseModel):

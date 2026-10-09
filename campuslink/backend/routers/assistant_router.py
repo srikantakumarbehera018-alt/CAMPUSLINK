@@ -12,7 +12,7 @@ router = APIRouter(prefix="/assistant", tags=["AI Assistant"])
 
 @router.post("/chat", response_model=schemas.ChatResponse)
 def assistant_chat(request: schemas.ChatRequest, db: Session = Depends(get_db)):
-    msg = request.message.strip().lower()
+    msg = (request.message or request.prompt or "").strip().lower()
     student_id = request.student_id or 1
 
     student = db.query(models.Student).filter(models.Student.id == student_id).first()

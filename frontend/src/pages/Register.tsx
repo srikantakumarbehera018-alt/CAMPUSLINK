@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { UserPlus, User, Mail, Lock, GraduationCap, AlertCircle, CheckCircle } from 'lucide-react';
+import { API_BASE_URL } from '../config/api';
 
 export const Register: React.FC = () => {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ export const Register: React.FC = () => {
     setSuccess('');
 
     try {
-      await axios.post('https://ai-placement-preparation-system-2.onrender.com/api/auth/login',{
+      await axios.post(`${API_BASE_URL}/api/auth/register`, {
         username,
         email,
         password,

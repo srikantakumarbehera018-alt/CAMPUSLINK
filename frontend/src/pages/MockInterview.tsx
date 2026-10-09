@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { 
@@ -59,7 +60,7 @@ export const MockInterview: React.FC = () => {
     setError('');
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:8080/api/student/interview/questions?jobTitle=${encodeURIComponent(jobTitle)}`, {
+      const response = await axios.get(`${API_BASE_URL}/api/student/interview/questions?jobTitle=${encodeURIComponent(jobTitle)}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -98,7 +99,7 @@ export const MockInterview: React.FC = () => {
     setStep('submitting');
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post('http://localhost:8080/api/student/interview/evaluate', {
+      const response = await axios.post(`${API_BASE_URL}/api/student/interview/evaluate`, {
         jobTitle,
         jobDescription: jobDesc,
         answers: finalAnswers

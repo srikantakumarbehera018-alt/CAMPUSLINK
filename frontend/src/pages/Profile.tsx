@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { 
@@ -63,7 +64,7 @@ export const Profile: React.FC = () => {
   const fetchProfile = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:8080/api/profile', {
+      const response = await axios.get(`${API_BASE_URL}/api/profile`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = response.data;
@@ -111,7 +112,7 @@ export const Profile: React.FC = () => {
         const base64String = reader.result as string;
         try {
           const token = localStorage.getItem('token');
-          const response = await axios.post('http://localhost:8080/api/profile/upload-photo', {
+          const response = await axios.post(`${API_BASE_URL}/api/profile/upload-photo`, {
             profilePictureBase64: base64String
           }, {
             headers: { Authorization: `Bearer ${token}` }
@@ -157,7 +158,7 @@ export const Profile: React.FC = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put('http://localhost:8080/api/profile/update', profile, {
+      const response = await axios.put(`${API_BASE_URL}/api/profile/update`, profile, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -213,7 +214,7 @@ export const Profile: React.FC = () => {
         const base64String = reader.result as string;
         try {
           const token = localStorage.getItem('token');
-          const response = await axios.post('http://localhost:8080/api/profile/upload-resume', {
+          const response = await axios.post(`${API_BASE_URL}/api/profile/upload-resume`, {
             resumeBase64: base64String,
             resumeFileName: file.name
           }, {
@@ -265,7 +266,7 @@ export const Profile: React.FC = () => {
           const base64String = reader.result as string;
           try {
             const token = localStorage.getItem('token');
-            const response = await axios.post('http://localhost:8080/api/profile/upload-resume', {
+            const response = await axios.post(`${API_BASE_URL}/api/profile/upload-resume`, {
               resumeBase64: base64String,
               resumeFileName: file.name
             }, {

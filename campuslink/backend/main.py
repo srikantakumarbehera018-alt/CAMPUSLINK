@@ -1,4 +1,11 @@
 import os
+import sys
+
+# Ensure current backend directory is in sys.path for direct module resolution
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+if CURRENT_DIR not in sys.path:
+    sys.path.insert(0, CURRENT_DIR)
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -23,20 +30,41 @@ from routers import (
     interview_router,
 )
 
-# Initialize Database Schema
-Base.metadata.create_all(bind=engine)
-
 app = FastAPI(
     title="CAMPUSLINK API",
     description="AI-Powered Campus-to-Corporate Placement Management & Analytics Platform",
     version=settings.VERSION
 )
 
-# CORS Middleware
+# Determine allowed origins for CORS
+origins_raw = settings.ALLOWED_ORIGINS.strip()
+if origins_raw:
+    origins = [orig.strip() for orig in origins_raw.split(",") if orig.strip()]
+else:
+    # Default allowed origins for local development
+    origins = [
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "http://localhost:8000",
+        "http://localhost:8080",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:8000",
+        "http://127.0.0.1:8080",
+    ]
+
+# If wildcard is used, credentials must be False per CORS specification.
+has_wildcard = "*" in origins
+allow_creds = not has_wildcard
+
+# Support *.vercel.app preview URLs if explicit wildcard is not configured
+allow_regex = r"^https:\/\/.*\.vercel\.app$" if not has_wildcard else None
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=origins,
+    allow_origin_regex=allow_regex,
+    allow_credentials=allow_creds,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -53,38 +81,72 @@ app.include_router(assistant_router.router, prefix="/api")
 app.include_router(interview_router.router, prefix="/api")
 app.include_router(demo_router.router, prefix="/api")
 
-# Static Directories
-STATIC_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
+# Static and Upload directories setup (graceful for serverless / read-only environments)
+STATIC_DIR = os.path.join(os.path.dirname(CURRENT_DIR), "static")
 UPLOAD_DIR = settings.UPLOAD_DIR
-os.makedirs(STATIC_DIR, exist_ok=True)
-os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
-app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
+try:
+    if not os.path.exists(STATIC_DIR):
+        os.makedirs(STATIC_DIR, exist_ok=True)
+except OSError:
+    pass
+
+try:
+    if not os.path.exists(UPLOAD_DIR):
+        os.makedirs(UPLOAD_DIR, exist_ok=True)
+except OSError:
+    pass
+
+if os.path.isdir(STATIC_DIR):
+    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+if os.path.isdir(UPLOAD_DIR):
+    app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
+
 
 @app.on_event("startup")
 def on_startup():
-    db = SessionLocal()
     try:
-        user_count = db.query(models.User).count()
-        if user_count == 0:
-            print("No users found in database. Auto-seeding realistic placement dataset...")
-            seed_database()
-        else:
-            print(f"Database contains {user_count} users. Ready.")
-    finally:
-        db.close()
+        # Initialize Database Schema if not already present
+        Base.metadata.create_all(bind=engine)
+        db = SessionLocal()
+        try:
+            user_count = db.query(models.User).count()
+            if user_count == 0:
+                print("No users found in database. Auto-seeding realistic placement dataset...")
+                seed_database()
+            else:
+                print(f"Database contains {user_count} users. Ready.")
+        finally:
+            db.close()
+    except Exception as e:
+        print(f"Startup database warning / check: {e}")
+
 
 @app.get("/")
 def serve_index():
     index_file = os.path.join(STATIC_DIR, "index.html")
     if os.path.exists(index_file):
         return FileResponse(index_file)
-    return {"message": "CAMPUSLINK Backend is running. Please check /docs for OpenAPI specifications."}
+    return {
+        "message": "CAMPUSLINK FastAPI backend is running.",
+        "documentation": "/docs",
+        "health": "/health"
+    }
+
 
 @app.get("/health")
+@app.get("/api/health")
 def health_check():
-    return {"status": "healthy", "platform": "CAMPUSLINK", "version": settings.VERSION}
+    db_type = "sqlite" if settings.DATABASE_URL.startswith("sqlite") else "remote_sql"
+    return {
+        "status": "healthy",
+        "platform": settings.PROJECT_NAME,
+        "version": settings.VERSION,
+        "database": db_type,
+        "serverless": settings.IS_VERCEL
+    }
+
 
 if __name__ == "__main__":
     import uvicorn

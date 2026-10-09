@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { 
@@ -215,7 +216,7 @@ export const RoleInterview: React.FC = () => {
   const detectFromResume = async () => {
     setAnalyzingResume(true);
     try {
-      const res = await axios.get('http://localhost:8080/api/student/role-interview/detect-resume', { headers });
+      const res = await axios.get(`${API_BASE_URL}/api/student/role-interview/detect-resume`, { headers });
       if (res.data) {
         setDetectedRole(res.data.role);
         setSelectedRole(res.data.role);
@@ -236,7 +237,7 @@ export const RoleInterview: React.FC = () => {
     if (!resumeText.trim()) return;
     setAnalyzingResume(true);
     try {
-      const res = await axios.post('http://localhost:8080/api/student/role-interview/detect-text', { text: resumeText }, { headers });
+      const res = await axios.post(`${API_BASE_URL}/api/student/role-interview/detect-text`, { text: resumeText }, { headers });
       if (res.data) {
         setDetectedRole(res.data.role);
         setSelectedRole(res.data.role);
@@ -252,7 +253,7 @@ export const RoleInterview: React.FC = () => {
 
   const loadHistory = async () => {
     try {
-      const res = await axios.get('http://localhost:8080/api/student/interview/history', { headers });
+      const res = await axios.get(`${API_BASE_URL}/api/student/interview/history`, { headers });
       const roleRuns = res.data.filter((item: any) => item.jobTitle.startsWith("AI Role Interview:"));
       setHistoricalRuns(roleRuns);
     } catch (e) {
@@ -285,7 +286,7 @@ export const RoleInterview: React.FC = () => {
     setSingleScore(null);
     
     try {
-      const res = await axios.post('http://localhost:8080/api/student/role-interview/generate', {
+      const res = await axios.post(`${API_BASE_URL}/api/student/role-interview/generate`, {
         role: selectedRole,
         difficulty: selectedDifficulty,
         skills: detectedSkills.join(', ')
@@ -324,7 +325,7 @@ export const RoleInterview: React.FC = () => {
     setSingleFeedback(null);
     setSingleScore(null);
     try {
-      const res = await axios.post('http://localhost:8080/api/student/role-interview/evaluate-single', {
+      const res = await axios.post(`${API_BASE_URL}/api/student/role-interview/evaluate-single`, {
         question: questions[currentIdx].question,
         answer: userAnswer,
         category: questions[currentIdx].category
@@ -385,7 +386,7 @@ export const RoleInterview: React.FC = () => {
     setEvaluating(true);
     speak("Processing scorecard and compiling AI feedback. Please wait.");
     try {
-      const res = await axios.post('http://localhost:8080/api/student/role-interview/evaluate', {
+      const res = await axios.post(`${API_BASE_URL}/api/student/role-interview/evaluate`, {
         role: selectedRole,
         difficulty: selectedDifficulty,
         answers: answers

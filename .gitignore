@@ -10,3 +10,10 @@ dist/
 build/
 *.log
 campuslink.db
+*.db
+*.sqlite
+*.sqlite3
+.vercel/
+uploads/
+campuslink/uploads/
+scratch/
